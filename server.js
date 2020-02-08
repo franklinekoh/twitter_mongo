@@ -42,6 +42,9 @@ if(isProduction){
 
 // MongoDB Models
 require('./src/models/User');
+require('./src/models/Post');
+require('./src/models/Upload');
+require('./src/models/Reply');
 
 /**
  *  Routes

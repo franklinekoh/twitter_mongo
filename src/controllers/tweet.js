@@ -1,8 +1,11 @@
-const {Post, Uploads, Replies, User} = require('../database/models');
-const { Op } = require('sequelize');
 const util = require('../utils');
 const redisClient = require('../../cache/redis');
 const config = require('../config');
+const mongoose = require('mongoose');
+const Post = mongoose.model('Post');
+const Upload = mongoose.model('Upload');
+const User = mongoose.model('User');
+const Reply = mongoose.model('Reply');
 
 /**
  * post tweet endpoint
@@ -17,16 +20,23 @@ module.exports.post = async (req, res, next) => {
         if (!req.body.body && req.files.length === 0)
             return res.status(422).json({'message': 'body or photos is required'});
 
-        const post = await Post.create({
-            user_id: req.payload.id,
-            body: req.body.body
-        });
-        req.files.map(async (value) => {
-            await Uploads.create({
-                post_id: post.id,
-                upload_path: 'uploads/posts/'+value.filename
+        let uploadIds = [];
+
+        for (let i = 0; i < req.files.length; i++){
+            const value = req.files[i];
+            const uploadPath = 'uploads/posts/'+value.filename;
+            const upload = await Upload.create({
+                upload_path: uploadPath
             });
+            uploadIds.push(upload);
+        }
+
+        const post = new Post({
+            ...req.body,
+            author: req.payload.id,
         });
+        post.upload(uploadIds);
+        await post.save();
 
         return res.status(201).json({'message': 'post creation completed'});
     }catch (e) {
@@ -45,34 +55,42 @@ module.exports.post = async (req, res, next) => {
  */
 module.exports.reply = async (req, res, next) => {
     try {
-        if (!req.body.post_id)
+        const body = req.body.body;
+        const post_id = req.body.post_id;
+        const files = req.files;
+
+        if (!post_id)
             return res.status(422).json({'message': 'post_id is required'});
 
-        if (!req.body.body && req.files.length === 0)
+        if (!body && files === 0)
             return res.status(422).json({'message': 'body or photos is required'});
 
-        const post = await Post.create({ //create a new post. a reply is also a post on twitter
-            user_id: req.payload.id,
-            body: req.body.body
-        });
+        let uploadIds = [];
 
-        const reply = await Replies.create({
-            user_id: req.payload.id,
-            post_id: req.body.post_id,
-            body: req.body.body
-        });
-
-        req.files.map(async (value) => {
-            await Uploads.create({ // ...because a reply is a post
-                'post_id': post.id,
-                'upload_path': 'uploads/posts/'+value.filename
+        for (let i = 0; i < files.length; i++){
+            const value = files[i];
+            const uploadPath = 'uploads/posts/'+value.filename;
+            const upload = await Upload.create({
+                upload_path: uploadPath
             });
+            uploadIds.push(upload);
+        }
 
-            await Uploads.create({
-                'post_id': reply.id,
-                'upload_path': 'uploads/posts/'+value.filename
-            });
+        const post = new Post({ //create a new post. a reply is also a post on twitter
+            body,
+            author: req.payload.id,
         });
+        post.upload(uploadIds);
+
+        const reply = new Reply({
+            body,
+            author: req.payload.id,
+            post: post_id,
+        });
+        reply.upload(uploadIds);
+
+        await post.save();
+        await reply.save();
 
         return res.status(201).json({'message': 'reply creation completed'});
     }catch (e) {
