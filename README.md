@@ -3,8 +3,8 @@ A set of API endpoint that mimics basic twitter features
 
 ### Requirement
 -   Nodejs
--   sql
--   redis
+-   MongoDB
+-   Redis
 
 ### Local Setup
 -   `cp` `.env.example` to `.env` and set your environment variables.
@@ -25,7 +25,7 @@ A set of API endpoint that mimics basic twitter features
 
 ### Documentation
 #### local doc
--   visit `http://localhost:${APP_PORT}` 
+-   visit `http://localhost:${PORT}` 
 #### live doc
 -   visit https://arcane-earth-46866.herokuapp.com/
 ### Live Url

@@ -12,12 +12,7 @@ const User = mongoose.model('User');
 module.exports.register = async (req, res, next) => {
         try {
 
-            let user = new User();
-            user.name = req.body.name;
-            user.email = req.body.email;
-            user.bio = req.body.bio;
-            user.phone = req.body.phone;
-            user.username = req.body.username;
+            let user = new User(req.body);
             user.setPassword(req.body.password);
 
             await user.save();

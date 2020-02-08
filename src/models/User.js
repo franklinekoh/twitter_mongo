@@ -24,6 +24,13 @@ UserSchema.methods.validatePassword = function(password){
     return bcrypt.compareSync(password, this.password);
 };
 
+UserSchema.methods.follow = function(id){
+    if(this.following.indexOf(id) === -1){
+        this.following = this.following.concat([id]);
+    }
+    return this.save();
+};
+
 UserSchema.methods.generateJWT = function() {
     return jwt.sign({
         id: this._id,

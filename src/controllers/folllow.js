@@ -1,13 +1,22 @@
-const { Follow } = require('../database/models');
+const mongoose = require('mongoose');
+const User = mongoose.model('User');
+/**
+ * Follow User
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {Promise<*>}
+ */
 module.exports.create = async (req, res, next) => {
     try {
-        if (req.body.followed_id === req.payload.id)
+        const followed_id = req.body.followed_id;
+        const follower_id = req.payload.id;
+        if (followed_id === follower_id)
             return res.status(403).json({'message': 'Unauthorized: cannot follow self'});
 
-        await Follow.create({
-            follower_id: req.payload.id,
-            followed_id: req.body.followed_id
-        });
+        const user = await User.findById(follower_id);
+        await user.follow(followed_id);
 
         return res.status(201).json({'message': 'follow successful'});
     }catch (e) {
