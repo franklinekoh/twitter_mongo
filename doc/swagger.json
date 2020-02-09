@@ -212,7 +212,7 @@
             "in": "formData",
             "name": "post_id",
             "description": "post_id that is being replied to",
-            "type": "integer"
+            "type": "string"
           },
           {
             "name": "Authorization",
@@ -491,8 +491,8 @@
     "followParams": {
       "properties": {
         "followed_id": {
-          "type": "integer",
-          "example": 1
+          "type": "string",
+          "example": "5e3f07668b7e1a4aacd507b7"
         }
       }
     },
