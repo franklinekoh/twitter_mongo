@@ -1,8 +1,8 @@
-const { Follow, Post, Uploads } = require('../database/models');
-const { Op } = require('sequelize');
-const util = require('../utils');
 const redisClient = require('../../cache/redis');
 const config = require('../config');
+const mongoose = require('mongoose');
+const Post = mongoose.model('Post');
+const User = mongoose.model('User');
 
 /**
  * get user timeline
@@ -14,35 +14,27 @@ const config = require('../config');
  */
 module.exports.get = async (req, res, next) => {
     try {
+        const page = req.query.page || 1;
+        const size = req.query.size || 100;
+        const offset = (page-1) * page;
+        const limit = size;
 
         redisClient.get(config.redis.keys.getTimeline+':'+req.payload.id, async (err, data) => {
             if (!data) {
-                const follow = await Follow.findAll({attributes: ['followed_id'], where: {
-                        follower_id: req.payload.id
-                    }});
+                const user = await User.findById(req.payload.id);
+                const followingId = user.following; //get followed ids and use to get their post to display
 
-                let followedId = [];
-                follow.map((value) => {
-                    followedId.push(value.followed_id); //get followed ids and use to get their post to display
-                });
-                followedId.push(req.payload.id); //also pass users id into array since user sees
-                // their posts own on their timeline too. other algorithms In my opinion, e.g "like" can also be
-                // implemented using this concept
+                followingId.push(req.payload.id); //also pass users id into array since user sees
+                // // their posts own on their timeline too. other algorithms In my opinion, e.g "like" can also be
+                // // implemented using this concept
 
-                const post = await Post.findAll(util.paginate({where: {
-                        user_id: {
-                            [Op.in]: followedId
-                        }
-                    },
-                    order: [
-                        ['createdAt', 'DESC']
-                    ],
-                    include: [{
-                        model: Uploads,
-                        as: 'uploads'
-                    }]
-                }, parseInt(req.query.page) || 1, parseInt(req.query.size) || 100));
-                
+                const post = await Post.find({
+                    author: { $in: followingId}
+                }).populate('uploads')
+                    .sort({createdAt: 'desc'})
+                    .limit(limit)
+                    .skip(offset);
+
                 redisClient.set(config.redis.keys.getTimeline +':'+req.payload.id, JSON.stringify(post), 'EX', config.redis.exp);
                 return  res.json({data: post});
             }else {

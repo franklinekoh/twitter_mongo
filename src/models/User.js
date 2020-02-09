@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
     phone: {type: String, require: [true, 'can"t be blank'], unique: true, index: true},
     username: {type: String, require: [true, 'can"t be blank'], unique: true, index: true},
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    password: String
+    password: {type: String, select: false, require: [true, 'can"t be blank']}
 }, {timestamps: true});
 
 UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});

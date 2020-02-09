@@ -1,4 +1,3 @@
-const util = require('../utils');
 const redisClient = require('../../cache/redis');
 const config = require('../config');
 const mongoose = require('mongoose');
@@ -89,8 +88,10 @@ module.exports.reply = async (req, res, next) => {
         });
         reply.upload(uploadIds);
 
-        await post.save();
-        await reply.save();
+        await Promise.all([
+            post.save(),
+            reply.save()
+        ]);
 
         return res.status(201).json({'message': 'reply creation completed'});
     }catch (e) {
@@ -112,26 +113,28 @@ module.exports.search = async (req, res, next) => {
             const type = req.query.type; //twitter ui separates search result into different
             // categories (top,latest,people,photos etc.). I felt it was ok
             // separate this search into two cat. users and tweets
+            const page = req.query.page || 1;
+            const size = req.query.size || 100;
+            const offset = (page-1) * page;
+            const limit = size;
+            const regexQuery = `.*${q}.*`;
             var data;
 
             if (type === 'users') {
                 redisClient.get(config.redis.keys.getSearchUser, async (error, result) => {
                     if (!result){
-                        data = await User.findAll({
-                            where: {
-                                [Op.or]: {
-                                    username: {
-                                        [Op.like]: `%${q}%`
-                                    },
-                                    name: {
-                                        [Op.like]: `%${q}%`
-                                    }
-                                }
-                            },
-                            order: [
-                                ['createdAt', 'DESC']
+                        data = await User.find(
+                            {
+                            $or: [
+                                {email:  {$regex: new RegExp(regexQuery, 'i')}},
+                                {username: {$regex: new RegExp(regexQuery, 'i')}},
+                                {phone: {$regex: new RegExp(regexQuery, 'i')}}
                             ]
-                        });
+                        }
+                        )
+                            .sort({createdAt: 'desc'})
+                            .limit(limit)
+                            .skip(offset);
 
                         redisClient.set(config.redis.keys.getSearchUser, JSON.stringify(data), 'EX', config.redis.exp);
                     } else {
@@ -146,20 +149,12 @@ module.exports.search = async (req, res, next) => {
             if (type === 'tweets') {
                 redisClient.get(config.redis.keys.getSearchTweet, async (error, result) => {
                     if (!result){
-                        data = await Post.findAll(util.paginate({
-                            where: {
-                                body: {
-                                    [Op.like]: `%${q}%`
-                                }
-                            },
-                            order: [
-                                ['createdAt', 'DESC']
-                            ],
-                            include: [{
-                                model: Uploads,
-                                as: 'uploads'
-                            }]
-                        }), parseInt(req.query.page) || 1, parseInt(req.query.size) || 100);
+                        data = await Post.find({
+                            body: {$regex: new RegExp(regexQuery, 'i')}
+                        }).populate('uploads')
+                            .sort({createdAt: 'desc'})
+                            .limit(limit)
+                            .skip(offset);
                         redisClient.set(config.redis.keys.getSearchTweet, JSON.stringify(data), 'EX', config.redis.exp);
                     } else {
                         data = JSON.parse(result);
@@ -167,7 +162,7 @@ module.exports.search = async (req, res, next) => {
                     return res.json({data: data});
                 });
             }
-            return res.json({data: {}});
+
         }catch (e) {
             next(e);
         }

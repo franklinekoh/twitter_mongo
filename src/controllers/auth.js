@@ -41,7 +41,7 @@ module.exports.login = async (req, res, next) => {
                         {username: user_id},
                         {phone: user_id}
                     ]
-            });
+            }).select('+password');
            if (!user) return res.status(401).json({'message': 'incorrect credentials'});
 
            if (!user.validatePassword(password))
