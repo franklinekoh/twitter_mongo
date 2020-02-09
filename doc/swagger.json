@@ -18,7 +18,7 @@
       "description": "API for twitter clone"
     }
   ],
-"host": "arcane-earth-46866.herokuapp.com",
+"host": "still-tundra-29433.herokuapp.com",
   "basePath": "/api/v1",
   "consumes": ["application/json", "application/x-www-form-urlencoded"],
   "produces": ["application/json"],

@@ -1,5 +1,5 @@
 ## twitter API
-A set of API endpoint that mimics basic twitter features
+A set of API endpoint that mimics basic twitter features. MongoDB version.
 
 ### Requirement
 -   Nodejs
@@ -7,6 +7,7 @@ A set of API endpoint that mimics basic twitter features
 -   Redis
 
 ### Local Setup
+-   clone this repo
 -   `cp` `.env.example` to `.env` and set your environment variables.
 -   in your terminal, cd to app root
 -   run `npm install`
@@ -16,8 +17,7 @@ A set of API endpoint that mimics basic twitter features
 -   Please note that I only wrote the unit and integration test for the users module,
     due to time constraint
 -   Follow the instructions in the Local Section Setup Above.
--   navigate to database folder from root run `cd src/database`
--   run `npx sequelize-cli db:migrate`
+-   Install MongoDB and run it by executing mongod
 -   run `npm test`
 -   if you experience eslint errors run `npm pretest -- -- fix`
 -   visit `http://localhost:${PORT}` 
@@ -27,9 +27,9 @@ A set of API endpoint that mimics basic twitter features
 #### local doc
 -   visit `http://localhost:${PORT}` 
 #### live doc
--   visit https://arcane-earth-46866.herokuapp.com/
+-   visit https://still-tundra-29433.herokuapp.com/
 ### Live Url
-- https://arcane-earth-46866.herokuapp.com/
+- https://still-tundra-29433.herokuapp.com/
 - Please note that you may get a connection timeout error. Like so
 `{
      "errors": {
