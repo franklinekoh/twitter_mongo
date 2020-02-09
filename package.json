@@ -4,11 +4,9 @@
   "description": "This is a set of API endpoint resembles a simple twitter backend service",
   "main": "server.js",
   "scripts": {
-    "pretest": "eslint --ignore-path .gitignore .",
+    "pretest": "eslint --fix",
     "test": "mocha 'test/integration/' 'test/unit/'",
-    "start": "nodemon server",
-    "migrate": "npx sequelize-cli db:migrate",
-    "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate"
+    "start": "nodemon server"
   },
   "repository": {
     "type": "git",

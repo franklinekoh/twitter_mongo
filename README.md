@@ -19,7 +19,6 @@ A set of API endpoint that mimics basic twitter features. MongoDB version.
 -   Follow the instructions in the Local Section Setup Above.
 -   Install MongoDB and run it by executing mongod
 -   run `npm test`
--   if you experience eslint errors run `npm pretest -- -- fix`
 -   visit `http://localhost:${PORT}` 
 -   to access auth protected routes pass `Authorization` as header parameter and `Bearer <jwt token>` as value
 

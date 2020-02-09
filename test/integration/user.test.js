@@ -14,7 +14,7 @@ describe('user registration', () => {
                 name: 'Ekoh Franklin',
                 email: 'ekohfranklin@gmail.com',
                 bio: 'Dial my number or email',
-                phone: '08178018780',
+                phone: '+2348178018780',
                 username: '',
                 password: 'Mskskd787'
             })
@@ -35,8 +35,8 @@ describe('user registration', () => {
                 name: 'Ekoh Franklin',
                 email: 'ekohfranklin@gmail.com',
                 bio: 'Hola! via email or phone',
-                phone: '08178018780',
-                username: '@_thefrank',
+                phone: '+2348178018780',
+                username: '@thefrank',
                 password: 'Mskskd787'
             })
             .end((err, res) => {

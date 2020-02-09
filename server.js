@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: true, limit: '10mb'}));
 
 if (!isProduction) {
     app.use(errorhandler({ log: true }));
-}
+};
 
 // Mongo DB connection
 if(isProduction){
