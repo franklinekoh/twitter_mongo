@@ -399,38 +399,14 @@
           "items": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "integer",
-                "example": 1
-              },
-              "user_id": {
-                "type": "integer",
-                "example": 3
-              },
-              "body": {
-                "type": "string",
-                "example": "Hi!"
-              },
-              "createdAt": {
-                "type": "string",
-                "example": "2020-02-02T19:48:58.000Z"
-              },
-              "updatedAt": {
-                "type": "string",
-                "example": "2020-02-02T19:48:58.000Z"
-              },
               "uploads": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "id": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "post_id": {
-                      "type": "integer",
-                      "example": "5"
+                    "_id": {
+                      "type": "string",
+                      "example": "5e3f4d9b6794af4ac8b5e2b8"
                     },
                     "upload_path": {
                       "type": "string",
@@ -446,6 +422,26 @@
                     }
                   }
                 }
+              },
+              "_id": {
+                "type": "string",
+                "example": "5e3f4d9b6794af4ac8b5e2b8"
+              },
+              "body": {
+                "type": "string",
+                "example": "Hi!"
+              },
+              "author": {
+                "type": "string",
+                "example": "5e3efb8c928ece4d04680037"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "2020-02-02T19:48:58.000Z"
+              },
+              "updatedAt": {
+                "type": "string",
+                "example": "2020-02-02T19:48:58.000Z"
               }
             }
           }

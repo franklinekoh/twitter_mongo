@@ -5,7 +5,7 @@ const ReplySchema = mongoose.Schema({
     post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
     body: String,
     uploads: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Upload' }]
-}, {timestamps: true});
+}, {timestamps: true, versionKey: false});
 
 ReplySchema.methods.upload = function(array){
     this.uploads = this.uploads.concat(array);

@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
     username: {type: String, require: [true, 'can"t be blank'], unique: true, index: true},
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     password: {type: String, select: false, require: [true, 'can"t be blank']}
-}, {timestamps: true});
+}, {timestamps: true, versionKey: false});
 
 UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
